@@ -33,7 +33,7 @@ public class MatriculaController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cursoId requerido");
         }
 
-        Curso curso = cursoRepository.findById(request.cursoId())
+        Curso curso = cursoRepository.findWithLockById(request.cursoId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso no encontrado"));
 
         if (curso.getVacantes() <= 0) {
