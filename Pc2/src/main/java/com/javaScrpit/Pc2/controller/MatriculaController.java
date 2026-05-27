@@ -49,7 +49,6 @@ public class MatriculaController {
         matricula.setCurso(curso);
 
         matriculaRepository.save(matricula);
-        cursoRepository.save(curso);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
