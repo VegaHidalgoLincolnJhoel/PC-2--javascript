@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Cursos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sin-vacantes { background-color: #f8d7da; border-color: #f5c2c7; opacity: 0.8; }
+        mark { background-color: #ffeb3b; padding: 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">MiUniversidad</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="index.html">Inicio</a>
+                <a class="nav-link active" href="cursos.html">Cursos</a>
+                <a class="nav-link" href="matricula.html">Matrícula</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="mb-4">Catálogo de Cursos</h2>
+        
+        <!-- Filtro -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <input type="text" id="filtroTexto" class="form-control" placeholder="Buscar por nombre o modalidad...">
+            </div>
+        </div>
+
+        <!-- Contenedor de Tarjetas -->
+        <div class="row" id="cursosContainer">
+            <!-- Los cursos se renderizarán aquí -->
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/cursos'; // Ajusta el puerto si tu backend usa otro
+        let cursos = []; // Guardará los cursos traídos de la API
+
+        document.addEventListener('DOMContentLoaded', () => {
+            obtenerCursos();
+            document.getElementById('filtroTexto').addEventListener('input', renderizarCursos);
+        });
+
+        async function obtenerCursos() {
+            try {
+                // Fetch a la API
+                const respuesta = await fetch(API_URL);
+                if(respuesta.ok) {
+                    cursos = await respuesta.json();
+                } else {
+                    // Datos de prueba por si el backend no está corriendo aún
+                    cursos = [
+                        { id: 1, codigo: "CS101", nombre: "Programación Web", creditos: 4, modalidad: "Presencial", vacantes: 15 },
+                        { id: 2, codigo: "CS102", nombre: "Base de Datos", creditos: 3, modalidad: "Virtual", vacantes: 0 },
+                        { id: 3, codigo: "CS103", nombre: "Inteligencia Artificial", creditos: 5, modalidad: "Híbrido", vacantes: 5 }
+                    ];
+                }
+                renderizarCursos();
+            } catch (error) {
+                console.error("Error al obtener cursos:", error);
+                document.getElementById('cursosContainer').innerHTML = `<div class="alert alert-danger">Error al conectar con el backend.</div>`;
+            }
+        }
+
+        // Función "Pipe" para resaltar texto
+        function resaltarTexto(texto, busqueda) {
+            if (!busqueda) return texto;
+            const regex = new RegExp(`(${busqueda})`, 'gi');
+            return texto.toString().replace(regex, '<mark>$1</mark>');
+        }
+
+        function renderizarCursos() {
+            const contenedor = document.getElementById('cursosContainer');
+            contenedor.innerHTML = '';
+            
+            const busqueda = document.getElementById('filtroTexto').value.toLowerCase();
+
+            // Filtrar
+            const cursosFiltrados = cursos.filter(c => 
+                c.nombre.toLowerCase().includes(busqueda) || 
+                c.modalidad.toLowerCase().includes(busqueda)
+            );
+
+            // Renderizar
+            cursosFiltrados.forEach(curso => {
+                const sinVacantes = curso.vacantes === 0;
+                // Requisito: Condición visual si no tiene vacantes (clase "sin-vacantes" y botón deshabilitado)
+                const cardClass = sinVacantes ? 'sin-vacantes' : '';
+                const badgeClass = sinVacantes ? 'bg-danger' : 'bg-success';
+                const vacantesTexto = sinVacantes ? 'Agotado' : `${curso.vacantes} disponibles`;
+
+                const html = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 ${cardClass} shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${resaltarTexto(curso.nombre, busqueda)}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Cód: ${curso.codigo}</h6>
+                                <p class="card-text">
+                                    <strong>Créditos:</strong> ${curso.creditos}<br>
+                                    <strong>Modalidad:</strong> ${resaltarTexto(curso.modalidad, busqueda)}
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                                <span class="badge ${badgeClass}">${vacantesTexto}</span>
+                                ${!sinVacantes ? `<a href="matricula.html?curso=${curso.id}" class="btn btn-sm btn-primary">Matricular</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                contenedor.innerHTML += html;
+            });
+        }
+    </script>
+</body>
+</html>
