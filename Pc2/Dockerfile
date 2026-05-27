@@ -4,8 +4,8 @@ WORKDIR /app
 COPY . .
 RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
-# Paso 2: Ejecutar la aplicación con Java 21 de Eclipse Temurin
-FROM eclipse-temurin:21-jr-alpine
+# Paso 2: Ejecutar la aplicación con Java 21 (Imagen oficial corregida)
+FROM eclipse-temurin:21-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
