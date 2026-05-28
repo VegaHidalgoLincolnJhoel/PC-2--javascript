@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos disponibles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">MiUniversidad</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/index.html">Inicio</a>
+                <a class="nav-link active" href="/cursos.html">Cursos</a>
+                <a class="nav-link" href="/matricula.html">Matrícula</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="mb-4">Cursos disponibles</h2>
+        <div id="listaCursos" class="row g-3"></div>
+    </div>
+
+    <script>
+        async function cargarCursos() {
+            const contenedor = document.getElementById('listaCursos');
+            contenedor.innerHTML = '<div class="col-12"><div class="alert alert-info">Cargando cursos...</div></div>';
+
+            try {
+                const respuesta = await fetch('/api/curso');
+                const cursos = await respuesta.json();
+
+                contenedor.innerHTML = '';
+                cursos.forEach(curso => {
+                    const agotado = curso.vacantes <= 0;
+                    contenedor.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card h-100 ${agotado ? 'border-danger' : ''}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${curso.nombre}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">${curso.codigo}</h6>
+                                    <p class="card-text mb-1"><strong>Créditos:</strong> ${curso.creditos}</p>
+                                    <p class="card-text mb-0"><strong>Modalidad:</strong> ${curso.modalidad}</p>
+                                </div>
+                                <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                                    <span class="badge ${agotado ? 'bg-danger' : 'bg-success'}">${agotado ? 'Agotado' : curso.vacantes + ' vacantes'}</span>
+                                    <a class="btn btn-sm btn-primary ${agotado ? 'disabled' : ''}" href="/matricula.html?cursoId=${curso.id}">Matricular</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                contenedor.innerHTML = '<div class="col-12"><div class="alert alert-danger">No se pudieron cargar los cursos.</div></div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarCursos);
+    </script>
+</body>
+</html>
