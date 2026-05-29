@@ -75,7 +75,7 @@
         // Cargar cursos en el select al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const respuesta = await fetch(API_CURSOS);
+                const respuesta = await fetch(API_BASE_URL + "/cursos");
                 const cursos = await respuesta.json();
                 llenarSelectCursos(cursos);
             } catch (error) {
@@ -113,7 +113,7 @@
 
             try {
                 // POST Request
-                const respuesta = await fetch(API_MATRICULAS, {
+                const respuesta = await fetch(API_BASE_URL + "/matriculas", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
