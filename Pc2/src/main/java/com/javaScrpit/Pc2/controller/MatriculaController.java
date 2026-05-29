@@ -59,7 +59,7 @@ public class MatriculaController {
 
     @GetMapping
     public List<MatriculaResponse> listar() {
-        return matriculaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))
+        return matriculaRepository.findAllWithCurso()
                 .stream()
                 .map(m -> new MatriculaResponse(
                         m.getId(),
