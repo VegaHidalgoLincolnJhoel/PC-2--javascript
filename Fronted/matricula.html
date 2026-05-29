@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Matrícula</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container">
@@ -66,8 +68,8 @@
     </div>
 
     <script>
-        const API_CURSOS = 'http://localhost:8080/api/cursos';
-        const API_MATRICULAS = 'http://localhost:8080/api/matriculas';
+        const API_CURSOS = `${API_BASE_URL}/cursos`;
+        const API_MATRICULAS = `${API_BASE_URL}/matriculas`;
 
         // Cargar cursos en el select al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -88,7 +90,7 @@
         function llenarSelectCursos(cursos) {
             const select = document.getElementById('cursoId');
             cursos.forEach(c => {
-                if(c.vacantes > 0) {
+                if (c.vacantes > 0) {
                     const option = document.createElement('option');
                     option.value = c.id;
                     option.textContent = c.nombre;
@@ -116,7 +118,7 @@
                     body: JSON.stringify(payload)
                 });
 
-                if(respuesta.ok || respuesta.status === 201) {
+                if (respuesta.ok || respuesta.status === 201) {
                     mostrarResumen(payload, true);
                     document.getElementById('formMatricula').reset(); // Limpiar formulario
                 } else {
@@ -132,10 +134,10 @@
         function mostrarResumen(datos, exito, errorMsg = "") {
             const divResumen = document.getElementById('resumenMatricula');
             const pTexto = document.getElementById('resumenTexto');
-            
+
             divResumen.classList.remove('d-none', 'alert-info', 'alert-danger');
-            
-            if(exito) {
+
+            if (exito) {
                 const nombreCurso = document.getElementById('cursoId').options[document.getElementById('cursoId').selectedIndex].text;
                 divResumen.classList.add('alert-info');
                 pTexto.innerHTML = `El estudiante <strong>${datos.nombre}</strong> (${datos.codigoEstudiante}) ha sido matriculado correctamente en <strong>${nombreCurso}</strong> para el turno <strong>${datos.turno}</strong>.`;
@@ -146,4 +148,5 @@
         }
     </script>
 </body>
+
 </html>
