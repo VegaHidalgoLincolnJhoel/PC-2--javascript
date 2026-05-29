@@ -1,6 +1,7 @@
 package com.javaScrpit.Pc2.controller;
 
 import com.javaScrpit.Pc2.dto.MatriculaRequest;
+import com.javaScrpit.Pc2.dto.MatriculaResponse;
 import com.javaScrpit.Pc2.model.Curso;
 import com.javaScrpit.Pc2.model.Matricula;
 import com.javaScrpit.Pc2.repository.CursoRepository;
@@ -57,27 +58,21 @@ public class MatriculaController {
     }
 
     @GetMapping
-    public List<MatriculaListItem> listar() {
+    public List<MatriculaResponse> listar() {
         return matriculaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))
                 .stream()
-                .map(m -> new MatriculaListItem(
+                .map(m -> new MatriculaResponse(
                         m.getId(),
                         m.getNombre(),
                         m.getCodigoEstudiante(),
                         m.getTurno(),
-                        m.getCurso().getId(),
-                        m.getCurso().getCodigo(),
-                        m.getCurso().getNombre()))
+                        new MatriculaResponse.CursoResponse(
+                                m.getCurso().getId(),
+                                m.getCurso().getCodigo(),
+                                m.getCurso().getNombre(),
+                                m.getCurso().getCreditos(),
+                                m.getCurso().getModalidad(),
+                                m.getCurso().getVacantes())))
                 .toList();
-    }
-
-    public record MatriculaListItem(
-            Long id,
-            String nombre,
-            String codigoEstudiante,
-            String turno,
-            Long cursoId,
-            String cursoCodigo,
-            String cursoNombre) {
     }
 }
