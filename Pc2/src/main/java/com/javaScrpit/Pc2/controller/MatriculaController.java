@@ -45,6 +45,7 @@ public class MatriculaController {
         }
 
         curso.setVacantes(curso.getVacantes() - 1);
+        cursoRepository.save(curso);
 
         Matricula matricula = new Matricula();
         matricula.setNombre(request.nombre());
